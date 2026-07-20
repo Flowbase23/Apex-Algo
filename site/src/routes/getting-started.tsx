@@ -1,234 +1,211 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
+import { STRIPE_LINKS } from "~/lib/stripe";
 
 export const Route = createFileRoute("/getting-started")({
   component: GettingStarted,
 });
-
-const stripeLinks: Record<string, string> = {
-  starter: "https://buy.stripe.com/9B65kCh2MgWEbXxdeB73G06",
-  pro: "https://buy.stripe.com/dRmbJ0eUEdKs5z9a2p73G07",
-  enterprise: "https://buy.stripe.com/fZufZg13O7m43r12zX73G08",
-};
 
 function GettingStarted() {
   const [activeStep, setActiveStep] = useState(0);
 
   const steps = [
     {
-      title: "Prerequisites",
-      icon: "📋",
-      content: (
-        <div className="space-y-4 text-gray-300">
-          <p>
-            Before installing the Apex Algo trading engine, make sure your system
-            meets these requirements:
-          </p>
-          <div className="rounded-xl border border-white/10 bg-gray-900/60 p-6">
-            <h4 className="mb-3 text-sm font-semibold text-white">System Requirements</h4>
-            <ul className="space-y-2 text-sm">
-              <li className="flex items-start gap-2">
-                <span className="mt-0.5 text-emerald-400">•</span>
-                <span><strong className="text-white">Python 3.10+</strong> — the engine is built entirely in Python</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="mt-0.5 text-emerald-400">•</span>
-                <span><strong className="text-white">pip</strong> — Python package manager (comes with Python)</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="mt-0.5 text-emerald-400">•</span>
-                <span><strong className="text-white">Git</strong> — for cloning the repository and version control</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="mt-0.5 text-emerald-400">•</span>
-                <span><strong className="text-white">8 GB RAM</strong> recommended for backtesting with large datasets</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="mt-0.5 text-emerald-400">•</span>
-                <span><strong className="text-white">macOS, Linux, or Windows (WSL2)</strong> — all major platforms supported</span>
-              </li>
-            </ul>
-          </div>
-        </div>
-      ),
-    },
-    {
-      title: "Clone & Install",
+      title: "System Requirements",
       icon: "💻",
       content: (
         <div className="space-y-4 text-gray-300">
           <p>
-            Clone the Apex Algo repository and install all dependencies with a single
-            setup command.
+            Before you begin, make sure your machine meets the minimum requirements
+            to run the Apex Algo trading engine.
           </p>
           <div className="rounded-xl border border-white/10 bg-gray-900/60 p-6">
-            <h4 className="mb-3 text-sm font-semibold text-white">Installation Commands</h4>
-            <div className="space-y-3">
-              <CodeBlock
-                label="Clone the repository"
-                code="git clone https://github.com/Flowbase23/Apex-Algo.git
-cd Apex-Algo/engine"
-              />
-              <CodeBlock
-                label="Create virtual environment (recommended)"
-                code="python3 -m venv venv
-source venv/bin/activate  # macOS/Linux
-# or: venv\\Scripts\\activate  # Windows"
-              />
-              <CodeBlock
-                label="Install dependencies"
-                code="pip install -r requirements.txt"
-              />
-            </div>
+            <h4 className="mb-3 text-sm font-semibold text-white">Minimum Requirements</h4>
+            <ul className="space-y-2 text-sm">
+              <li className="flex items-start gap-2">
+                <span className="mt-0.5 text-emerald-400">•</span>
+                <span><strong className="text-white">Python 3.10+</strong> — the engine
+                requires Python 3.10 or newer</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="mt-0.5 text-emerald-400">•</span>
+                <span><strong className="text-white">8 GB RAM</strong> recommended —
+                backtesting large datasets is memory-intensive</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="mt-0.5 text-emerald-400">•</span>
+                <span><strong className="text-white">Git</strong> — to clone the repository</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="mt-0.5 text-emerald-400">•</span>
+                <span><strong className="text-white">macOS, Linux, or Windows (WSL2)</strong> —
+                all major platforms are supported</span>
+              </li>
+            </ul>
           </div>
           <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-4">
             <p className="text-sm text-emerald-300">
-              <strong>💡 Tip:</strong> The <code className="rounded bg-emerald-500/10 px-1.5 py-0.5 text-xs">requirements.txt</code>{" "}
-              includes Pandas, NumPy, scikit-learn, TensorFlow, and all broker SDKs. Installation
-              typically takes 2–3 minutes on a modern machine.
+              <strong>💡 Tip:</strong> We recommend using a virtual environment
+              (<code className="rounded bg-emerald-500/10 px-1.5 py-0.5 text-xs">python3 -m venv venv</code>)
+              to keep dependencies isolated.
             </p>
           </div>
         </div>
       ),
     },
     {
-      title: "Configure API Keys",
+      title: "Clone the Repo",
+      icon: "📦",
+      content: (
+        <div className="space-y-4 text-gray-300">
+          <p>
+            Clone the Apex Algo repository from GitHub. This gives you the full trading
+            engine source code and all configuration files.
+          </p>
+          <div className="rounded-xl border border-white/10 bg-gray-900/60 p-6">
+            <h4 className="mb-3 text-sm font-semibold text-white">Clone Command</h4>
+            <CodeBlock
+              label="Terminal"
+              code="git clone https://github.com/Flowbase23/Apex-Algo.git"
+            />
+            <p className="mt-4 text-sm text-gray-400">
+              This creates an <code className="rounded bg-white/5 px-1.5 py-0.5 text-xs">Apex-Algo/</code>{" "}
+              directory with two subdirectories:
+            </p>
+            <ul className="mt-2 space-y-1 text-sm">
+              <li className="flex items-start gap-2">
+                <span className="mt-0.5 text-emerald-400">•</span>
+                <span><code className="rounded bg-white/5 px-1.5 py-0.5 text-xs">engine/</code> — the Python trading engine</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="mt-0.5 text-emerald-400">•</span>
+                <span><code className="rounded bg-white/5 px-1.5 py-0.5 text-xs">site/</code> — this marketing website</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      ),
+    },
+    {
+      title: "Install Dependencies",
+      icon: "📥",
+      content: (
+        <div className="space-y-4 text-gray-300">
+          <p>
+            Navigate into the engine directory and install all required Python packages.
+            All dependencies are listed in <code className="rounded bg-white/5 px-1.5 py-0.5 text-xs">requirements.txt</code>.
+          </p>
+          <div className="rounded-xl border border-white/10 bg-gray-900/60 p-6">
+            <h4 className="mb-3 text-sm font-semibold text-white">Install Commands</h4>
+            <CodeBlock
+              label="Terminal"
+              code="cd engine
+pip install -r requirements.txt"
+            />
+          </div>
+          <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-4">
+            <p className="text-sm text-emerald-300">
+              <strong>📦 Included packages:</strong> Pandas, NumPy, scikit-learn (Random Forest),
+              TensorFlow (Neural Networks), and broker SDKs for NinjaTrader and QuantConnect.
+            </p>
+          </div>
+        </div>
+      ),
+    },
+    {
+      title: "Run the Demo",
+      icon: "▶️",
+      content: (
+        <div className="space-y-4 text-gray-300">
+          <p>
+            Verify everything is installed correctly by running the built-in demo script.
+            This will execute a sample backtest and confirm all components are working.
+          </p>
+          <div className="rounded-xl border border-white/10 bg-gray-900/60 p-6">
+            <h4 className="mb-3 text-sm font-semibold text-white">Run Demo</h4>
+            <CodeBlock
+              label="Terminal"
+              code="python demo.py"
+            />
+          </div>
+          <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-4">
+            <p className="text-sm text-emerald-300">
+              <strong>✅ Expected output:</strong> The demo runs a quick backtest on sample data
+              and prints a performance summary including Sharpe ratio, win rate, and total return.
+              If you see these metrics, your installation is ready.
+            </p>
+          </div>
+        </div>
+      ),
+    },
+    {
+      title: "Configure Your Broker",
       icon: "🔑",
       content: (
         <div className="space-y-4 text-gray-300">
           <p>
-            The engine needs market data API keys to fetch real-time and historical price data.
-            Copy the environment template and add your keys.
+            Add your broker API credentials so the engine can connect to your trading
+            account. Edit the settings file to enter your keys.
           </p>
           <div className="rounded-xl border border-white/10 bg-gray-900/60 p-6">
-            <h4 className="mb-3 text-sm font-semibold text-white">API Configuration</h4>
-            <CodeBlock
-              label="Copy the environment template"
-              code="cp .env.example .env"
-            />
-            <p className="mt-3 text-sm text-gray-400">
-              Then edit <code className="rounded bg-white/5 px-1.5 py-0.5 text-xs">.env</code> and add your keys:
+            <h4 className="mb-3 text-sm font-semibold text-white">Broker Configuration</h4>
+            <p className="mb-3 text-sm text-gray-400">
+              Open <code className="rounded bg-white/5 px-1.5 py-0.5 text-xs">config/settings.py</code>{" "}
+              and fill in your broker credentials:
             </p>
-            <div className="mt-3 space-y-2 text-sm">
-              <div className="flex items-start gap-2">
-                <span className="mt-0.5 text-emerald-400">•</span>
-                <span>
-                  <strong className="text-white">ALPHA_VANTAGE_API_KEY</strong>{" "}
-                  <span className="text-gray-500">— Free tier available at{" "}
-                    <a href="https://www.alphavantage.co/support/#api-key" target="_blank" rel="noopener noreferrer" className="text-emerald-400 underline hover:text-emerald-300">
-                      alphavantage.co
-                    </a>
-                  </span>
-                </span>
-              </div>
-              <div className="flex items-start gap-2">
-                <span className="mt-0.5 text-emerald-400">•</span>
-                <span>
-                  <strong className="text-white">POLYGON_API_KEY</strong>{" "}
-                  <span className="text-gray-500">— Sign up at{" "}
-                    <a href="https://polygon.io/" target="_blank" rel="noopener noreferrer" className="text-emerald-400 underline hover:text-emerald-300">
-                      polygon.io
-                    </a>
-                  </span>
-                </span>
-              </div>
-              <div className="flex items-start gap-2">
-                <span className="mt-0.5 text-emerald-400">•</span>
-                <span>
-                  <strong className="text-white">NINJATRADER_CLIENT_ID</strong>{" "}
-                  <span className="text-gray-500">— From your NinjaTrader account dashboard</span>
-                </span>
-              </div>
-              <div className="flex items-start gap-2">
-                <span className="mt-0.5 text-emerald-400">•</span>
-                <span>
-                  <strong className="text-white">QUANTCONNECT_USER_ID</strong> /{" "}
-                  <strong className="text-white">QUANTCONNECT_API_TOKEN</strong>{" "}
-                  <span className="text-gray-500">— From your QuantConnect account</span>
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-      ),
-    },
-    {
-      title: "Run Backtests",
-      icon: "📊",
-      content: (
-        <div className="space-y-4 text-gray-300">
-          <p>
-            Before going live, validate your strategy against 5+ years of historical
-            market data. The backtesting framework connects directly to NinjaTrader and
-            QuantConnect.
-          </p>
-          <div className="rounded-xl border border-white/10 bg-gray-900/60 p-6">
-            <h4 className="mb-3 text-sm font-semibold text-white">Running Backtests</h4>
             <CodeBlock
-              label="Run the full backtest suite"
-              code="python backtest.py --years 5 --markets ES,NQ,CL"
+              label="config/settings.py"
+              code={`# NinjaTrader API credentials
+NINJATRADER_CLIENT_ID = "your-client-id"
+NINJATRADER_CLIENT_SECRET = "your-client-secret"
+
+# QuantConnect API credentials
+QUANTCONNECT_USER_ID = "your-user-id"
+QUANTCONNECT_API_TOKEN = "your-api-token"
+
+# Market data provider (Alpha Vantage or Polygon)
+DATA_PROVIDER = "polygon"  # or "alpha_vantage"
+POLYGON_API_KEY = "your-polygon-key"
+ALPHA_VANTAGE_API_KEY = "your-av-key"`}
             />
-            <p className="mt-3 text-sm text-gray-400">
-              Flags you can use:
-            </p>
-            <ul className="mt-2 space-y-1 text-sm">
-              <li><code className="rounded bg-white/5 px-1.5 py-0.5 text-xs">--years</code> — how many years of historical data to test</li>
-              <li><code className="rounded bg-white/5 px-1.5 py-0.5 text-xs">--markets</code> — comma-separated symbols (ES, NQ, CL, GC, 6E, etc.)</li>
-              <li><code className="rounded bg-white/5 px-1.5 py-0.5 text-xs">--strategy</code> — which ML model to use: <code className="rounded bg-white/5 px-1.5 py-0.5 text-xs">random_forest</code>, <code className="rounded bg-white/5 px-1.5 py-0.5 text-xs">neural_network</code>, or <code className="rounded bg-white/5 px-1.5 py-0.5 text-xs">ensemble</code></li>
-              <li><code className="rounded bg-white/5 px-1.5 py-0.5 text-xs">--report</code> — output format: <code className="rounded bg-white/5 px-1.5 py-0.5 text-xs">html</code>, <code className="rounded bg-white/5 px-1.5 py-0.5 text-xs">json</code>, or <code className="rounded bg-white/5 px-1.5 py-0.5 text-xs">csv</code></li>
-            </ul>
           </div>
-          <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-4">
-            <p className="text-sm text-emerald-300">
-              <strong>📈 Expected Output:</strong> The backtest report includes Sharpe ratio,
-              max drawdown, win rate, average risk/reward, equity curve, and monthly returns
-              breakdown.
+          <div className="rounded-xl border border-yellow-500/20 bg-yellow-500/5 p-4">
+            <p className="text-sm text-yellow-300">
+              <strong>🔒 Security:</strong> Never commit <code className="rounded bg-yellow-500/10 px-1.5 py-0.5 text-xs">config/settings.py</code>{" "}
+              with real credentials to version control. The file is already in{" "}
+              <code className="rounded bg-yellow-500/10 px-1.5 py-0.5 text-xs">.gitignore</code>.
             </p>
           </div>
         </div>
       ),
     },
     {
-      title: "Paper Trading",
+      title: "Paper Trade First",
       icon: "🧪",
       content: (
         <div className="space-y-4 text-gray-300">
           <p>
-            Once backtests look solid, run the engine in paper trading mode. This simulates
-            live market conditions with virtual capital — no real money at risk.
+            Always start with paper trading — simulated trades with virtual money.
+            This validates your strategy under live market conditions with zero risk.
           </p>
           <div className="rounded-xl border border-white/10 bg-gray-900/60 p-6">
             <h4 className="mb-3 text-sm font-semibold text-white">Start Paper Trading</h4>
             <CodeBlock
-              label="Launch the paper trading simulator"
-              code="python trade.py --mode paper --strategy ensemble --markets ES,NQ"
+              label="Python"
+              code={`from paper_trading.simulator import PaperSimulator
+
+sim = PaperSimulator(
+    strategy="ensemble",
+    markets=["ES", "NQ"],
+    initial_capital=100000,
+)
+sim.run()`}
             />
-            <p className="mt-3 text-sm text-gray-400">
-              The paper trading engine will:
-            </p>
-            <ul className="mt-2 space-y-1 text-sm">
-              <li className="flex items-start gap-2">
-                <span className="mt-0.5 text-emerald-400">•</span>
-                <span>Stream real-time market data from your configured API</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="mt-0.5 text-emerald-400">•</span>
-                <span>Generate trade signals using the trained ML models</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="mt-0.5 text-emerald-400">•</span>
-                <span>Execute simulated trades with realistic slippage and commissions</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="mt-0.5 text-emerald-400">•</span>
-                <span>Log all activity to <code className="rounded bg-white/5 px-1.5 py-0.5 text-xs">logs/paper_trading.log</code></span>
-              </li>
-            </ul>
           </div>
           <div className="rounded-xl border border-yellow-500/20 bg-yellow-500/5 p-4">
             <p className="text-sm text-yellow-300">
-              <strong>⚠️ Recommendation:</strong> Run paper trading for at least 2–4 weeks
-              before going live. Monitor drawdown, fill rates, and strategy behavior across
+              <strong>⚠️ Important:</strong> Run paper trading for at least 2–4 weeks before
+              going live. Monitor drawdown, win rate, and strategy behavior across
               different market conditions.
             </p>
           </div>
@@ -236,28 +213,31 @@ source venv/bin/activate  # macOS/Linux
       ),
     },
     {
-      title: "Connect Broker & Go Live",
+      title: "Go Live",
       icon: "🚀",
       content: (
         <div className="space-y-4 text-gray-300">
           <p>
-            When you're confident in the strategy, connect your live broker account and
-            switch to live mode. The AI executes trades autonomously during daytime hours.
+            When you're confident after paper trading, switch to live mode. The AI will
+            execute trades autonomously during daytime hours using your broker connection.
           </p>
           <div className="rounded-xl border border-white/10 bg-gray-900/60 p-6">
-            <h4 className="mb-3 text-sm font-semibold text-white">Live Deployment</h4>
+            <h4 className="mb-3 text-sm font-semibold text-white">Live Trading</h4>
             <CodeBlock
-              label="Go live with your broker"
-              code="python trade.py --mode live --strategy ensemble --markets ES,NQ \\
-  --risk-per-trade 1.0 --max-drawdown 5.0"
+              label="Terminal"
+              code={`python trade.py --mode live \\
+  --strategy ensemble \\
+  --markets ES,NQ \\
+  --risk-per-trade 1.0 \\
+  --max-drawdown 5.0`}
             />
             <p className="mt-3 text-sm text-gray-400">
-              Critical live trading flags:
+              Key flags explained:
             </p>
             <ul className="mt-2 space-y-1 text-sm">
-              <li><code className="rounded bg-white/5 px-1.5 py-0.5 text-xs">--risk-per-trade</code> — percentage of account risked per trade (default: 1.0%)</li>
-              <li><code className="rounded bg-white/5 px-1.5 py-0.5 text-xs">--max-drawdown</code> — auto-stop if drawdown exceeds this percentage</li>
-              <li><code className="rounded bg-white/5 px-1.5 py-0.5 text-xs">--trading-hours</code> — restrict to specific hours (e.g., <code className="rounded bg-white/5 px-1.5 py-0.5 text-xs">09:30-16:00</code>)</li>
+              <li><code className="rounded bg-white/5 px-1.5 py-0.5 text-xs">--risk-per-trade</code> — % of account risked per trade (default: 1.0%)</li>
+              <li><code className="rounded bg-white/5 px-1.5 py-0.5 text-xs">--max-drawdown</code> — auto-stop if drawdown exceeds this %</li>
+              <li><code className="rounded bg-white/5 px-1.5 py-0.5 text-xs">--trading-hours</code> — restrict to specific hours (e.g. 09:30-16:00)</li>
               <li><code className="rounded bg-white/5 px-1.5 py-0.5 text-xs">--broker</code> — <code className="rounded bg-white/5 px-1.5 py-0.5 text-xs">ninjatrader</code> or <code className="rounded bg-white/5 px-1.5 py-0.5 text-xs">quantconnect</code></li>
             </ul>
           </div>
@@ -267,15 +247,15 @@ source venv/bin/activate  # macOS/Linux
               <div className="rounded-lg border border-white/5 bg-white/5 p-4">
                 <h5 className="font-semibold text-white">NinjaTrader</h5>
                 <p className="mt-1 text-xs text-gray-400">
-                  Direct FIX API connection. Futures & forex supported. Set
-                  NINJATRADER_CLIENT_ID and NINJATRADER_CLIENT_SECRET in .env.
+                  Direct FIX API connection. Futures & forex supported. Configure via{" "}
+                  <code className="rounded bg-white/5 px-1 py-0.5 text-xs">config/settings.py</code>.
                 </p>
               </div>
               <div className="rounded-lg border border-white/5 bg-white/5 p-4">
                 <h5 className="font-semibold text-white">QuantConnect</h5>
                 <p className="mt-1 text-xs text-gray-400">
-                  Cloud-based execution via LEAN engine. Ideal for multi-asset
-                  strategies. Set QUANTCONNECT_USER_ID and QUANTCONNECT_API_TOKEN.
+                  Cloud-based execution via LEAN engine. Multi-asset strategies supported.
+                  Configure in <code className="rounded bg-white/5 px-1 py-0.5 text-xs">config/settings.py</code>.
                 </p>
               </div>
             </div>
@@ -297,18 +277,10 @@ source venv/bin/activate  # macOS/Linux
             <span className="text-lg font-bold text-white">Apex Algo</span>
           </a>
           <div className="hidden items-center gap-8 text-sm font-medium text-gray-400 md:flex">
-            <a href="/#features" className="transition hover:text-white">
-              Features
-            </a>
-            <a href="/#how-it-works" className="transition hover:text-white">
-              How It Works
-            </a>
-            <a href="/#pricing" className="transition hover:text-white">
-              Pricing
-            </a>
-            <a href="/getting-started" className="text-emerald-400 transition hover:text-emerald-300">
-              Getting Started
-            </a>
+            <a href="/#features" className="transition hover:text-white">Features</a>
+            <a href="/#how-it-works" className="transition hover:text-white">How It Works</a>
+            <a href="/#pricing" className="transition hover:text-white">Pricing</a>
+            <a href="/getting-started" className="text-emerald-400 transition hover:text-emerald-300">Getting Started</a>
           </div>
           <a
             href="/#pricing"
@@ -328,11 +300,11 @@ source venv/bin/activate  # macOS/Linux
             Setup Guide
           </div>
           <h1 className="text-3xl font-extrabold tracking-tight text-white sm:text-5xl lg:text-6xl">
-            Getting Started with{" "}
-            <span className="text-gradient">Apex Algo</span>
+            Get Started with{" "}
+            <span className="text-gradient">Apex Algo Trading</span>
           </h1>
           <p className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-gray-400">
-            Follow this step-by-step guide to install, configure, and deploy the Apex Algo
+            Follow this step-by-step guide to install, configure, and launch the Apex Algo
             trading engine on your local machine. From clone to live trading in under 30 minutes.
           </p>
         </div>
@@ -346,12 +318,12 @@ source venv/bin/activate  # macOS/Linux
               Don't Have a Subscription Yet?
             </h2>
             <p className="mt-3 text-gray-400">
-              Choose a plan below to get access to the trading engine. You'll be redirected to
-              our secure Stripe checkout, then come right back here to follow the setup guide.
+              Choose a plan below to access the full trading engine. After payment you'll be
+              redirected right back here to complete your setup.
             </p>
             <div className="mt-8 grid gap-4 sm:grid-cols-3">
               <a
-                href={stripeLinks.starter}
+                href={STRIPE_LINKS.starter}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="rounded-xl border border-white/10 bg-gray-900/60 px-6 py-4 text-center transition hover:border-emerald-500/30 hover:bg-gray-900/80"
@@ -361,7 +333,7 @@ source venv/bin/activate  # macOS/Linux
                 <div className="mt-2 text-xs text-gray-500">Up to 2 markets</div>
               </a>
               <a
-                href={stripeLinks.pro}
+                href={STRIPE_LINKS.pro}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-6 py-4 text-center transition hover:border-emerald-500/50 hover:bg-emerald-500/15"
@@ -372,7 +344,7 @@ source venv/bin/activate  # macOS/Linux
                 <div className="mt-2 text-xs text-gray-500">Up to 10 markets</div>
               </a>
               <a
-                href={stripeLinks.enterprise}
+                href={STRIPE_LINKS.enterprise}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="rounded-xl border border-white/10 bg-gray-900/60 px-6 py-4 text-center transition hover:border-emerald-500/30 hover:bg-gray-900/80"
@@ -391,10 +363,10 @@ source venv/bin/activate  # macOS/Linux
         <div className="mx-auto max-w-4xl px-6">
           <div className="mb-12 text-center">
             <h2 className="text-2xl font-bold text-white sm:text-3xl">
-              Setup Guide
+              Quick Start Steps
             </h2>
             <p className="mt-3 text-gray-400">
-              Already subscribed? Jump straight into the installation steps below.
+              Already subscribed? Follow the steps below to get the engine running.
             </p>
           </div>
 
@@ -458,80 +430,150 @@ source venv/bin/activate  # macOS/Linux
         </div>
       </section>
 
-      {/* Troubleshooting */}
+      {/* FAQ Section */}
       <section className="border-t border-white/5 py-16">
         <div className="mx-auto max-w-4xl px-6">
           <div className="mb-10 text-center">
             <h2 className="text-2xl font-bold text-white sm:text-3xl">
-              Troubleshooting
+              Frequently Asked Questions
             </h2>
             <p className="mt-3 text-gray-400">
-              Common issues and how to resolve them quickly.
+              Quick answers to common questions about setup and trading.
             </p>
           </div>
           <div className="space-y-4">
             <details className="group rounded-xl border border-white/10 bg-gray-900/50">
               <summary className="cursor-pointer px-6 py-4 text-sm font-medium text-white transition hover:text-emerald-400">
-                "Module not found" errors during pip install
+                How do I connect my broker?
               </summary>
-              <div className="border-t border-white/5 px-6 py-4 text-sm text-gray-400">
+              <div className="border-t border-white/5 px-6 py-4 text-sm text-gray-400 space-y-3">
                 <p>
-                  Make sure you've activated your virtual environment before running pip. If issues
-                  persist, try:
+                  Open <code className="rounded bg-white/5 px-1.5 py-0.5 text-xs">config/settings.py</code>{" "}
+                  and add your broker API credentials:
                 </p>
-                <CodeBlock
-                  code="pip install --upgrade pip setuptools wheel
-pip install -r requirements.txt --no-cache-dir"
-                />
+                <ul className="space-y-1">
+                  <li className="flex items-start gap-2">
+                    <span className="mt-0.5 text-emerald-400">•</span>
+                    <span><strong className="text-white">NinjaTrader:</strong> Set{" "}
+                    <code className="rounded bg-white/5 px-1.5 py-0.5 text-xs">NINJATRADER_CLIENT_ID</code> and{" "}
+                    <code className="rounded bg-white/5 px-1.5 py-0.5 text-xs">NINJATRADER_CLIENT_SECRET</code></span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="mt-0.5 text-emerald-400">•</span>
+                    <span><strong className="text-white">QuantConnect:</strong> Set{" "}
+                    <code className="rounded bg-white/5 px-1.5 py-0.5 text-xs">QUANTCONNECT_USER_ID</code> and{" "}
+                    <code className="rounded bg-white/5 px-1.5 py-0.5 text-xs">QUANTCONNECT_API_TOKEN</code></span>
+                  </li>
+                </ul>
+                <p>
+                  You must also enable API trading in your broker's account settings.
+                  Test the connection with:{" "}
+                  <code className="rounded bg-white/5 px-1.5 py-0.5 text-xs">python trade.py --mode test-connection --broker ninjatrader</code>
+                </p>
               </div>
             </details>
             <details className="group rounded-xl border border-white/10 bg-gray-900/50">
               <summary className="cursor-pointer px-6 py-4 text-sm font-medium text-white transition hover:text-emerald-400">
-                API rate limit errors during backtesting
+                Can I trade multiple markets?
               </summary>
-              <div className="border-t border-white/5 px-6 py-4 text-sm text-gray-400">
+              <div className="border-t border-white/5 px-6 py-4 text-sm text-gray-400 space-y-3">
                 <p>
-                  Free API tiers have rate limits. Either upgrade your API plan or reduce
-                  concurrent requests:
+                  Yes! The engine supports multiple futures and forex markets simultaneously.
+                  Simply list them in the <code className="rounded bg-white/5 px-1.5 py-0.5 text-xs">--markets</code> flag:
                 </p>
                 <CodeBlock
-                  code="python backtest.py --years 5 --rate-limit 5  # Max 5 requests per minute"
+                  code="python trade.py --mode live --markets ES,NQ,CL,GC,6E"
                 />
+                <p>
+                  Supported symbols include: <strong>ES</strong> (S&P 500), <strong>NQ</strong> (Nasdaq),
+                  <strong> CL</strong> (Crude Oil), <strong>GC</strong> (Gold), <strong>6E</strong> (Euro FX),
+                  and more. See <code className="rounded bg-white/5 px-1.5 py-0.5 text-xs">config/markets.py</code>{" "}
+                  for the full list.
+                </p>
+                <p>
+                  The number of markets you can trade simultaneously depends on your plan:
+                  Starter (2), Professional (10), or Enterprise (unlimited).
+                </p>
               </div>
             </details>
             <details className="group rounded-xl border border-white/10 bg-gray-900/50">
               <summary className="cursor-pointer px-6 py-4 text-sm font-medium text-white transition hover:text-emerald-400">
-                Broker connection fails in live mode
+                What about risk management?
               </summary>
-              <div className="border-t border-white/5 px-6 py-4 text-sm text-gray-400">
+              <div className="border-t border-white/5 px-6 py-4 text-sm text-gray-400 space-y-3">
                 <p>
-                  Verify your broker credentials in <code className="rounded bg-white/5 px-1.5 py-0.5 text-xs">.env</code> and
-                  that your broker account has API trading enabled. Test the connection:
+                  Apex Algo has built-in risk management at every level of the trading pipeline:
                 </p>
-                <CodeBlock
-                  code="python trade.py --mode test-connection --broker ninjatrader"
-                />
+                <ul className="space-y-2">
+                  <li className="flex items-start gap-2">
+                    <span className="mt-0.5 text-emerald-400">•</span>
+                    <span><strong className="text-white">Per-trade risk:</strong> Controlled via{" "}
+                    <code className="rounded bg-white/5 px-1.5 py-0.5 text-xs">--risk-per-trade</code>{" "}
+                    (default 1.0% of account per trade)</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="mt-0.5 text-emerald-400">•</span>
+                    <span><strong className="text-white">Max drawdown:</strong> Set with{" "}
+                    <code className="rounded bg-white/5 px-1.5 py-0.5 text-xs">--max-drawdown</code>{" "}
+                    (engine auto-stops if exceeded)</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="mt-0.5 text-emerald-400">•</span>
+                    <span><strong className="text-white">Position sizing:</strong> Automatically
+                    calculated based on account size and risk parameters</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="mt-0.5 text-emerald-400">•</span>
+                    <span><strong className="text-white">Stop-loss:</strong> Every trade
+                    includes an automated stop-loss order</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="mt-0.5 text-emerald-400">•</span>
+                    <span><strong className="text-white">Trading hours:</strong> Restrict
+                    to specific windows with <code className="rounded bg-white/5 px-1.5 py-0.5 text-xs">--trading-hours</code></span>
+                  </li>
+                </ul>
+                <p>
+                  We strongly recommend running paper trading for 2–4 weeks before going live
+                  so you can observe how these risk controls behave in different market conditions.
+                </p>
               </div>
             </details>
             <details className="group rounded-xl border border-white/10 bg-gray-900/50">
               <summary className="cursor-pointer px-6 py-4 text-sm font-medium text-white transition hover:text-emerald-400">
-                High memory usage during backtests
+                What markets are supported?
               </summary>
-              <div className="border-t border-white/5 px-6 py-4 text-sm text-gray-400">
+              <div className="border-t border-white/5 px-6 py-4 text-sm text-gray-400 space-y-3">
                 <p>
-                  Large backtests can consume significant RAM. Reduce the scope or use
-                  incremental backtesting:
+                  Apex Algo supports futures and forex markets. Here are the major symbols:
                 </p>
-                <CodeBlock
-                  code="python backtest.py --years 5 --batch-size 250  # Process 250 days at a time"
-                />
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <div className="rounded-lg border border-white/5 bg-white/5 p-3">
+                    <h5 className="text-xs font-semibold text-emerald-400">Futures</h5>
+                    <p className="mt-1 text-xs text-gray-400">
+                      ES (S&P 500), NQ (Nasdaq), CL (Crude Oil), GC (Gold), RTY (Russell),
+                      ZB (Treasury Bonds)
+                    </p>
+                  </div>
+                  <div className="rounded-lg border border-white/5 bg-white/5 p-3">
+                    <h5 className="text-xs font-semibold text-emerald-400">Forex</h5>
+                    <p className="mt-1 text-xs text-gray-400">
+                      6E (EUR/USD), 6J (USD/JPY), 6B (GBP/USD), 6C (USD/CAD),
+                      6A (AUD/USD)
+                    </p>
+                  </div>
+                </div>
+                <p>
+                  The full list is in <code className="rounded bg-white/5 px-1.5 py-0.5 text-xs">config/markets.py</code>.
+                  You can also add custom symbols by editing that file.
+                </p>
               </div>
             </details>
           </div>
         </div>
       </section>
 
-      {/* Need help */}
+      {/* Support CTA */}
       <section className="border-t border-white/5 py-16">
         <div className="mx-auto max-w-3xl px-6 text-center">
           <div className="mx-auto mb-6 inline-flex items-center gap-2 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-4 py-1.5 text-sm font-medium text-emerald-400">
@@ -541,7 +583,7 @@ pip install -r requirements.txt --no-cache-dir"
             Need Help?
           </h2>
           <p className="mx-auto mt-4 max-w-xl text-gray-400">
-            Our team is here to help you get set up. Priority support is included with
+            Our team is here to help. Priority support is included with
             Professional and Enterprise plans.
           </p>
           <div className="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row">
@@ -552,10 +594,10 @@ pip install -r requirements.txt --no-cache-dir"
               Contact Support
             </a>
             <a
-              href="/#features"
+              href="/#pricing"
               className="rounded-xl border border-white/10 bg-white/5 px-8 py-4 text-base font-semibold text-gray-300 transition hover:bg-white/10 hover:text-white"
             >
-              Explore Features
+              View Pricing
             </a>
           </div>
         </div>
@@ -572,15 +614,9 @@ pip install -r requirements.txt --no-cache-dir"
               <span className="text-sm font-semibold text-white">Apex Algo Trading</span>
             </div>
             <div className="flex gap-6 text-sm text-gray-500">
-              <a href="#" className="transition hover:text-gray-300">
-                Terms
-              </a>
-              <a href="#" className="transition hover:text-gray-300">
-                Privacy
-              </a>
-              <a href="#" className="transition hover:text-gray-300">
-                Docs
-              </a>
+              <a href="#" className="transition hover:text-gray-300">Terms</a>
+              <a href="#" className="transition hover:text-gray-300">Privacy</a>
+              <a href="#" className="transition hover:text-gray-300">Docs</a>
             </div>
             <p className="text-sm text-gray-600">
               &copy; {new Date().getFullYear()} Apex Algo Trading. All rights reserved.
@@ -596,7 +632,7 @@ pip install -r requirements.txt --no-cache-dir"
 
 function CodeBlock({ code, label }: { code: string; label?: string }) {
   return (
-    <div className="rounded-lg border border-white/10 bg-gray-950 overflow-hidden">
+    <div className="rounded-lg border border-white/10 bg-gray-950 overflow-hidden mt-3 first:mt-0">
       {label && (
         <div className="border-b border-white/5 px-4 py-2 text-xs font-medium text-gray-500">
           {label}
