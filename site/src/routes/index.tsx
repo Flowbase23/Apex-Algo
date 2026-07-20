@@ -256,9 +256,7 @@ function Home() {
                 </li>
               </ul>
               <a
-                href="https://buy.stripe.com/9B65kCh2MgWEbXxdeB73G06"
-                target="_blank"
-                rel="noopener noreferrer"
+                href="/getting-started?tier=starter"
                 className="mt-8 block rounded-xl border border-white/10 bg-white/5 px-6 py-3 text-center text-sm font-semibold text-gray-300 transition hover:bg-white/10 hover:text-white"
               >
                 Subscribe — $49/mo
@@ -299,9 +297,7 @@ function Home() {
                 </li>
               </ul>
               <a
-                href="https://buy.stripe.com/dRmbJ0eUEdKs5z9a2p73G07"
-                target="_blank"
-                rel="noopener noreferrer"
+                href="/getting-started?tier=pro"
                 className="mt-8 block rounded-xl bg-emerald-600 px-6 py-3 text-center text-sm font-semibold text-white shadow-lg shadow-emerald-600/25 transition hover:bg-emerald-500"
               >
                 Subscribe — $149/mo
@@ -339,9 +335,7 @@ function Home() {
                 </li>
               </ul>
               <a
-                href="https://buy.stripe.com/fZufZg13O7m43r12zX73G08"
-                target="_blank"
-                rel="noopener noreferrer"
+                href="/getting-started?tier=enterprise"
                 className="mt-8 block rounded-xl border border-white/10 bg-white/5 px-6 py-3 text-center text-sm font-semibold text-gray-300 transition hover:bg-white/10 hover:text-white"
               >
                 Subscribe — $499/mo
