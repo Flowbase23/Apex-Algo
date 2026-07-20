@@ -2,55 +2,184 @@
 
 AI-powered automated trading system for futures and forex markets. Combines historical pattern recognition (Random Forest, Neural Networks) with real-time data feeds to make disciplined, emotion-free trades.
 
-## Quick Start
-
-```bash
-chmod +x setup.sh && ./setup.sh
-```
-
-This single command:
-- Checks Python 3.10+ is installed
-- Creates an isolated virtual environment
-- Installs all dependencies
-- Copies `.env.example` → `.env` (edit it later for premium API keys)
-- Runs the test suite to verify everything works
-
-After setup, run the demo:
-
-```bash
-source venv/bin/activate
-python demo.py
-```
-
-## Prerequisites
+## System Requirements
 
 | Requirement | Minimum | Notes |
 |-------------|---------|-------|
 | Python | 3.10+ | [Download](https://www.python.org/downloads/) |
-| pip | 23.0+ | Bundled with Python |
+| RAM | 8 GB | TensorFlow models use ~2-4 GB at runtime |
+| Disk | 5 GB free | For dependencies, model checkpoints, data cache |
 | OS | Linux, macOS, WSL2 | Windows native works but WSL2 recommended |
-| Disk | ~2 GB | For venv + TensorFlow + data cache |
+| pip | 23.0+ | Bundled with Python 3.10+ |
 
-## Manual Setup
-
-If you prefer to set up step by step:
+## Quick Start
 
 ```bash
-# 1. Create virtual environment
-python3 -m venv venv
+# 1. Clone the repository
+git clone https://github.com/Flowbase23/Apex-Algo.git
+cd Apex-Algo/engine
+
+# 2. One-command setup
+chmod +x setup.sh && ./setup.sh
+
+# 3. Activate and run the demo
 source venv/bin/activate
-
-# 2. Install dependencies
-pip install --upgrade pip
-pip install -r requirements.txt
-
-# 3. Configure environment
-cp .env.example .env
-# Edit .env to add API keys (optional — Yahoo Finance works for free)
-
-# 4. Verify installation
-python -m pytest tests/ -v
+python demo.py
 ```
+
+This fetches real S&P 500 futures data, engineers 28 technical indicators, trains Random Forest + Neural Network models, runs a backtest, and prints a performance report.
+
+## Configuration
+
+All settings live in `config/settings.py` and can be overridden via environment variables in `.env`.
+
+### Markets
+
+```python
+# config/settings.py
+DEFAULT_FUTURES = ["ES", "NQ"]    # S&P 500, Nasdaq
+DEFAULT_FOREX = ["EURUSD"]         # Euro/US Dollar
+```
+
+Available futures: ES (S&P 500 E-mini), NQ (Nasdaq 100), CL (Crude Oil), GC (Gold)
+Available forex: EURUSD, GBPUSD, USDJPY
+
+### Risk Management
+
+```bash
+# .env
+MAX_POSITION_SIZE_PCT=0.02       # Max 2% per trade
+MAX_DAILY_DRAWDOWN_PCT=0.05      # Stop trading after 5% daily loss
+MAX_LEVERAGE=1.0                 # No leverage by default
+STOP_LOSS_ATR_MULTIPLIER=2.0     # Stop-loss at 2× ATR
+TAKE_PROFIT_ATR_MULTIPLIER=3.0   # Take-profit at 3× ATR
+```
+
+### Trading Hours
+
+```python
+TRADING_HOURS = {"start": "09:30", "end": "16:00"}  # Eastern Time
+TRADING_TIMEZONE = "US/Eastern"
+TRADING_DAYS = [0, 1, 2, 3, 4]                      # Monday–Friday
+```
+
+### Data Sources
+
+| Source | API Key | Free Tier | Default |
+|--------|:-------:|-----------|---------|
+| Yahoo Finance | No | Unlimited | ✅ Enabled |
+| Alpha Vantage | Yes | 25 req/day | ⏸ Disabled |
+| Polygon.io | Yes | 5 req/min | ⏸ Disabled |
+
+Enable premium sources in `.env`:
+
+```bash
+ALPHA_VANTAGE_API_KEY=your_key
+POLYGON_API_KEY=your_key
+```
+
+Then flip the flags in `config/settings.py`:
+
+```python
+ENABLE_ALPHA_VANTAGE = True
+ENABLE_POLYGON = True
+```
+
+## Connecting a Broker
+
+The engine includes adapter stubs for two broker platforms. These are interface definitions ready for implementation once API keys and credentials are provided.
+
+### NinjaTrader
+
+```python
+from live.executor import Executor, NinjaTraderAdapter
+
+# Create a NinjaTrader-connected executor
+adapter = NinjaTraderAdapter(host="localhost", port=36973)
+adapter.connect()
+
+executor = Executor(broker=adapter)
+if executor.is_ready:
+    # Place orders, manage positions, stream market data
+    from live.executor import Order, OrderSide, OrderType
+    order = Order(
+        symbol="ES",
+        side=OrderSide.BUY,
+        order_type=OrderType.MARKET,
+        quantity=1,
+    )
+    executor.submit(order)
+```
+
+**Prerequisites:**
+- NinjaTrader 8 installed with AT Interface enabled
+- API credentials configured in NinjaTrader's Options → AT Interface
+- Firewall allows local TCP connections on the AT Interface port
+
+### QuantConnect
+
+```python
+from live.executor import QuantConnectAdapter
+
+adapter = QuantConnectAdapter(
+    user_id="your_user_id",
+    api_token="your_api_token",
+)
+adapter.connect()
+
+executor = Executor(broker=adapter)
+```
+
+**Prerequisites:**
+- QuantConnect account with live trading enabled
+- API token from your QuantConnect dashboard
+- Strategy model files uploaded to your QuantConnect project
+
+## Paper Trading
+
+The engine includes a full paper trading simulator for risk-free strategy testing.
+
+```python
+from paper_trading.simulator import PaperSimulator
+
+# Start with $100,000 simulated account
+sim = PaperSimulator(initial_capital=100_000)
+sim.start()
+
+# Place a simulated order
+order = sim.place_order("ES", "buy", quantity=1, price=4500.0)
+print(f"Order filled at ${order.filled_price:.2f}")
+
+# Check positions and equity
+snapshot = sim.snapshot()
+print(f"Equity: ${snapshot['equity']:,.2f}")
+print(f"Open positions: {len(snapshot['open_positions'])}")
+
+# Run a backtest first to validate your strategy
+from backtest.engine import run_backtest
+from backtest.metrics import compute_metrics
+
+result = run_backtest(featured_df, symbol="ES")
+metrics = compute_metrics(result)
+print(f"Sharpe: {metrics['sharpe_ratio']:.3f}, Win Rate: {metrics['win_rate']:.1f}%")
+```
+
+### Paper Trading Flow
+
+1. **Backtest** — Validate the strategy on historical data
+2. **Paper trade** — Run live market hours with simulated money
+3. **Review metrics** — Check Sharpe, drawdown, win rate weekly
+4. **Go live** — Connect a funded broker account when ready
+
+## Going Live
+
+When you're ready to trade real capital:
+
+1. **Paper trade for at least 2 weeks** — Confirm strategy performance matches backtest expectations
+2. **Start small** — Begin with 1 contract / mini lot and scale up gradually
+3. **Monitor daily** — Check `MAX_DAILY_DRAWDOWN_PCT` in `.env` and adjust if needed
+4. **Connect your broker** — Implement the NinjaTrader or QuantConnect adapter with your real credentials
+5. **Never override risk limits** — The engine enforces position size and drawdown limits automatically
 
 ## Architecture
 
@@ -80,152 +209,101 @@ trading-engine/
 │   └── test_integration.py    # Full integration suite (17 tests)
 ├── demo.py                    # End-to-end pipeline demo
 ├── setup.sh                   # One-command installer
+├── setup.py                   # pip-installable package
 ├── requirements.txt           # Python dependencies
-├── .env.example               # API key template
+├── .env.example               # Environment variable template
 └── .gitignore
 ```
 
-## Markets Supported
+## Manual Setup
 
-### Futures
-| Symbol | Name               | Exchange | Tick Size | Point Value |
-|--------|--------------------|----------|-----------|-------------|
-| ES     | S&P 500 E-mini     | CME      | 0.25      | $50.00      |
-| NQ     | Nasdaq 100 E-mini  | CME      | 0.25      | $20.00      |
-| CL     | Crude Oil          | NYMEX    | 0.01      | $1,000.00   |
-| GC     | Gold               | COMEX    | 0.10      | $100.00     |
-
-### Forex
-| Symbol | Name                 | Pip Size | Lot Size  |
-|--------|----------------------|----------|-----------|
-| EURUSD | Euro / US Dollar     | 0.0001   | 100,000   |
-| GBPUSD | British Pound / USD  | 0.0001   | 100,000   |
-| USDJPY | US Dollar / Yen      | 0.01     | 100,000   |
-
-## Data Sources
-
-| Source         | API Key Required | Default    | Notes                        |
-|----------------|:----------------:|------------|------------------------------|
-| Yahoo Finance  | No               | ✅ Enabled | Free, no signup required     |
-| Alpha Vantage  | Yes              | ⏸ Disabled | Free tier: 25 req/day        |
-| Polygon.io     | Yes              | ⏸ Disabled | Free tier: 5 req/min         |
-
-### Enabling Premium Sources
-
-1. Get an API key from [Alpha Vantage](https://www.alphavantage.co/support/#api-key) or [Polygon.io](https://polygon.io/dashboard)
-2. Add it to `.env`:
-   ```
-   ALPHA_VANTAGE_API_KEY=your_key_here
-   POLYGON_API_KEY=your_key_here
-   ```
-3. Enable in `config/settings.py`:
-   ```python
-   ENABLE_ALPHA_VANTAGE = True
-   ENABLE_POLYGON = True
-   ```
-
-## Configuration
-
-Edit `config/settings.py` to customize:
-
-```python
-# Markets
-DEFAULT_FUTURES = ["ES", "NQ"]      # Futures to trade
-DEFAULT_FOREX = ["EURUSD"]           # Forex pairs to trade
-
-# Trading hours (Eastern Time)
-TRADING_HOURS = {"start": "09:30", "end": "16:00"}
-
-# Risk management
-MAX_POSITION_SIZE_PCT = 0.02         # Max 2% per trade
-MAX_DAILY_DRAWDOWN_PCT = 0.05        # Stop if 5% down in a day
-STOP_LOSS_ATR_MULTIPLIER = 2.0       # Stop-loss distance
-TAKE_PROFIT_ATR_MULTIPLIER = 3.0     # Take-profit distance
-
-# Model hyperparameters
-RANDOM_FOREST_CONFIG = { ... }
-NEURAL_NET_CONFIG = { ... }
-
-# Backtest defaults
-BACKTEST_CONFIG = {
-    "initial_capital": 100_000.0,
-    "commission": 2.50,
-    "slippage_pct": 0.001,
-}
-```
-
-## Usage
-
-### Run the Demo (full pipeline)
+If you prefer step-by-step control:
 
 ```bash
+python3 -m venv venv
 source venv/bin/activate
-python demo.py
+pip install --upgrade pip
+pip install -r requirements.txt
+pip install -e .                # Install the engine as a package
+cp .env.example .env            # Edit .env with your settings
+python -m pytest tests/ -v      # Verify everything works
 ```
 
-Fetches S&P 500 futures data, engineers features, trains RF + NN models, runs a backtest, and prints a performance report.
-
-### Programmatic Usage
+## Programmatic Usage
 
 ```python
-from trading_engine import *
+from data.fetcher import fetch_yfinance
+from data.processor import build_features, add_target, feature_columns
+from models.random_forest import RandomForestModel
+from backtest.engine import run_backtest
+from backtest.metrics import compute_metrics
 
 # Fetch data
-df = fetch_data("ES=F", timeframe="1d")
+df = fetch_yfinance("ES=F", timeframe="1d", period="2y")
 
-# Build features
+# Engineer features
 featured = build_features(df)
 
-# Train a model
+# Train model
+cols = [c for c in feature_columns() if c in featured.columns]
 rf = RandomForestModel()
-rf.train(featured[feature_columns()], targets)
+rf.train(featured[cols], features["target"])
 
 # Backtest
-result = run_backtest(featured, ensemble=ensemble, symbol="ES")
-
-# View metrics
+result = run_backtest(featured, symbol="ES")
 metrics = compute_metrics(result)
-print(f"Sharpe: {metrics['sharpe_ratio']:.3f}, Win Rate: {metrics['win_rate']:.1f}%")
-```
-
-### Run Tests
-
-```bash
-# All tests
-python -m pytest tests/ -v
-
-# Import verification only
-python -m pytest tests/test_imports.py -v
-
-# Integration tests only
-python -m pytest tests/test_integration.py -v
+print(f"Sharpe: {metrics['sharpe_ratio']:.3f} | Win Rate: {metrics['win_rate']:.1f}%")
 ```
 
 ## KPIs Tracked
 
-| Metric              | Description                                  |
-|---------------------|----------------------------------------------|
-| Sharpe Ratio        | Risk-adjusted returns (annualized)           |
-| Sortino Ratio       | Downside risk-adjusted returns               |
-| Win Rate            | Percentage of profitable trades              |
-| Profit Factor       | Gross profit / gross loss                    |
-| Maximum Drawdown    | Peak-to-trough loss percentage               |
-| Total Return        | Cumulative return on initial capital         |
-| Avg Risk/Reward     | Average win size / average loss size         |
-| Number of Trades    | Total trade count in period                  |
+| Metric | Description |
+|--------|-------------|
+| Sharpe Ratio | Risk-adjusted returns (annualized) |
+| Sortino Ratio | Downside risk-adjusted returns |
+| Win Rate | Percentage of profitable trades |
+| Profit Factor | Gross profit ÷ gross loss |
+| Maximum Drawdown | Peak-to-trough loss % |
+| Total Return | Cumulative return on initial capital |
+| Avg Risk/Reward | Average win size ÷ average loss size |
+
+## FAQ
+
+### Do I need an API key to get started?
+No. Yahoo Finance is free and enabled by default — the demo runs out of the box.
+
+### Does this trade real money automatically?
+Not by default. The live executor has **stub adapters** — you must implement broker-specific authentication and order routing before any real trades execute.
+
+### What markets can I trade?
+Futures (ES, NQ, CL, GC) and forex (EUR/USD, GBP/USD, USD/JPY). Edit `DEFAULT_FUTURES` and `DEFAULT_FOREX` in `config/settings.py`.
+
+### Can I use my own strategy rules?
+Yes. Add custom rule functions in `strategy/rules.py` and they'll be automatically included in the signal generator. Or replace the ML models with your own in `models/`.
+
+### What's the minimum account size?
+The backtest default is $100,000. For futures, typical margin requirements suggest at least $10,000 for micros (MES/MNQ) and $50,000+ for minis (ES/NQ). Adjust `PAPER_STARTING_CAPITAL` in `.env`.
+
+### How accurate are the backtests?
+Realistic — the engine models commission ($2.50/round-turn), slippage (0.1%), and trading hours. It does NOT model market impact or liquidity gaps. Always paper trade before going live.
+
+### How do I update the engine?
+```bash
+git pull origin main
+source venv/bin/activate
+pip install -r requirements.txt
+```
+
+### TensorFlow fails to install
+Try: `pip uninstall tensorflow -y && pip install tensorflow`. The engine falls back gracefully — Random Forest and rule-based signals work without TensorFlow.
 
 ## Troubleshooting
 
-### `ModuleNotFoundError: No module named 'tensorflow'`
-TensorFlow can be finicky on some systems. Try:
-```bash
-pip uninstall tensorflow -y
-pip install tensorflow
-```
-The engine falls back gracefully if TensorFlow isn't available — Random Forest and rule-based signals still work.
+### `ModuleNotFoundError: No module named 'pandas'`
+Run `source venv/bin/activate` first, then `pip install -r requirements.txt`.
 
 ### `No data returned` from Yahoo Finance
-Yahoo Finance occasionally rate-limits or changes their API. The demo falls back to synthetic data automatically. For production use, consider enabling Alpha Vantage or Polygon.io.
+Yahoo Finance occasionally rate-limits. The demo falls back to synthetic data. For production, enable Alpha Vantage or Polygon.io.
 
 ### `PermissionError` on setup.sh
 ```bash

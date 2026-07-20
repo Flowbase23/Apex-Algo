@@ -62,15 +62,30 @@ TIMEFRAMES = {
 DEFAULT_TIMEFRAME = "1h"
 
 # --- Risk Management ---
-MAX_POSITION_SIZE_PCT = 0.02       # Max 2% of capital per trade
-MAX_DAILY_DRAWDOWN_PCT = 0.05      # Stop trading if 5% down in a day
-MAX_LEVERAGE = 1.0                 # No leverage by default (set >1 for margin)
-STOP_LOSS_ATR_MULTIPLIER = 2.0     # Stop-loss as multiple of ATR
-TAKE_PROFIT_ATR_MULTIPLIER = 3.0   # Take-profit as multiple of ATR
+# Override via .env: MAX_POSITION_SIZE_PCT, MAX_DAILY_DRAWDOWN_PCT, etc.
+MAX_POSITION_SIZE_PCT = float(
+    os.environ.get("MAX_POSITION_SIZE_PCT", "0.02")
+)  # Max % of capital per trade
+MAX_DAILY_DRAWDOWN_PCT = float(
+    os.environ.get("MAX_DAILY_DRAWDOWN_PCT", "0.05")
+)  # Stop trading if daily drawdown exceeds this
+MAX_LEVERAGE = float(
+    os.environ.get("MAX_LEVERAGE", "1.0")
+)  # No leverage by default (set >1 for margin)
+STOP_LOSS_ATR_MULTIPLIER = float(
+    os.environ.get("STOP_LOSS_ATR_MULTIPLIER", "2.0")
+)  # Stop-loss as multiple of ATR
+TAKE_PROFIT_ATR_MULTIPLIER = float(
+    os.environ.get("TAKE_PROFIT_ATR_MULTIPLIER", "3.0")
+)  # Take-profit as multiple of ATR
 
 # --- Paper Trading ---
-PAPER_STARTING_CAPITAL = 100_000.0  # $100,000 simulated account
-PAPER_COMMISSION_PER_TRADE = 2.50  # $2.50 per round-turn
+PAPER_STARTING_CAPITAL = float(
+    os.environ.get("PAPER_STARTING_CAPITAL", "100000")
+)  # Simulated account size
+PAPER_COMMISSION_PER_TRADE = float(
+    os.environ.get("PAPER_COMMISSION_PER_TRADE", "2.50")
+)  # Per round-turn commission
 
 # --- Model Hyperparameters ---
 RANDOM_FOREST_CONFIG = {
