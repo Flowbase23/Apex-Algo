@@ -1,0 +1,35 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Virtual environment
+venv/
+.env/
+.venv/
+
+# Engine runtime data
+data_cache/
+logs/
+*.parquet
+*.h5
+
+# Environment secrets (real keys — never commit)
+.env
+
+# IDE / OS
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Jupyter
+.ipynb_checkpoints/
+
+# TensorFlow
+saved_model/
